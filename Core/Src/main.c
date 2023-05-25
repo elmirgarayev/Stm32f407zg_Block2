@@ -819,7 +819,7 @@ int main(void)
   		  		  	for(int hh=0;hh<10;hh++)
   		  		  	{
 		  		  		HAL_CAN_AddTxMessage(&hcan1, &TxHeader[17], TxData[17], &TxMailbox);
-		  		  		HAL_Delay(1);
+		  		  		HAL_Delay(20);
   		  		  	}
   		  		  	}
   		  		  	else
@@ -834,7 +834,7 @@ int main(void)
 		  		  	TxData[17][3] = stationAlarm;
 
 	  		  		HAL_CAN_AddTxMessage(&hcan1, &TxHeader[17], TxData[17], &TxMailbox);
-	  		  		HAL_Delay(1);
+	  		  		HAL_Delay(20);
 
 		  		  	TxData[13][0] = digitalSum[0];
 		  		  	TxData[13][1] = digitalSum[1];
@@ -850,11 +850,11 @@ int main(void)
 		  		  	TxData[15][3] = 0;
 
 		  		  	HAL_CAN_AddTxMessage(&hcan1, &TxHeader[13], TxData[13], &TxMailbox);
-		  		  	HAL_Delay(1);
+		  		  	HAL_Delay(20);
 		  			HAL_CAN_AddTxMessage(&hcan1, &TxHeader[14], TxData[14], &TxMailbox);
-		  			HAL_Delay(1);
+		  			HAL_Delay(20);
 		  			HAL_CAN_AddTxMessage(&hcan1, &TxHeader[15], TxData[15], &TxMailbox);
-		  			HAL_Delay(1);
+		  			HAL_Delay(20);
 
 		  			digitalSum[0] = 0;
 		  			digitalSum[1] = 0;
@@ -995,7 +995,7 @@ int main(void)
 				  }
 
 				  HAL_CAN_AddTxMessage(&hcan1, &TxHeader[i], TxData[i], &TxMailbox);
-				  HAL_Delay(1);
+				  HAL_Delay(20);
 
 			  }
 
@@ -1005,7 +1005,7 @@ int main(void)
 			  TxData[16][3] = digitalSum;
 
 			  HAL_CAN_AddTxMessage(&hcan1, &TxHeader[16], TxData[16], &TxMailbox);
-			  HAL_Delay(1);
+			  HAL_Delay(20);
 
 
 
@@ -1502,7 +1502,7 @@ void sendData(int inputId)
 	TxData[18][2]=2;  /////////stansiya nomresi
 	TxData[18][3]=4;
 	HAL_CAN_AddTxMessage(&hcan1, &TxHeader[18], TxData[18], &TxMailbox);
-	HAL_Delay(1);
+	HAL_Delay(20);
 }
 
 /* USER CODE END 4 */
