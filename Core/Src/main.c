@@ -552,6 +552,8 @@ int main(void)
 
   }
 
+	EEPROM_Write_NUM(0, 0, dataw3);
+	datar3 = EEPROM_Read_NUM(0, 0);
 
   /* USER CODE END 2 */
 
