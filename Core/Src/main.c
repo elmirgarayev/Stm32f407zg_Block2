@@ -372,7 +372,7 @@ int main(void)
 	HAL_CAN_Start(&hcan1);
 
 	HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING);
-	// 14 dene header olacaq
+
 
 	for(int j=0;j<30;j++){
 		TxHeader[j].DLC = 8;
@@ -390,24 +390,6 @@ int main(void)
 	}
 */
 
-
-	contactStateRead[0] = EEPROM_Read_NUM(10, 0);
-	contactStateRead[1] = EEPROM_Read_NUM(11, 0);
-	contactStateRead[2] = EEPROM_Read_NUM(12, 0);
-	contactStateRead[3] = EEPROM_Read_NUM(13, 0);
-	contactStateRead[4] = EEPROM_Read_NUM(14, 0);
-
-
-	//contact state leri eepromdan yukle
-	for(int k=0;k<16;k++){
-		contactState[k] = (contactStateRead[0] >> k) & 1;
-		contactState[k+16] = (contactStateRead[1] >> k) & 1;
-		contactState[k+32] = (contactStateRead[2] >> k) & 1;
-		contactState[k+48] = (contactStateRead[3] >> k) & 1;
-		if(k<7){
-			contactState[k+64] = (contactStateRead[4] >> k) & 1;
-		}
-	}
 
 	fadeOutTotRead[0] = EEPROM_Read_NUM(1, 0);
 	fadeOutTotRead[1] = EEPROM_Read_NUM(2, 0);
@@ -435,6 +417,7 @@ int main(void)
 		}
 	}
 
+
 	//analog alarmLevel leri burda eepromdan yukle
 	for(int k=0;k<24;k++)
 	{
@@ -445,6 +428,24 @@ int main(void)
 		else
 		{
 			alarmLevel[k] = EEPROM_Read_NUM(8, 4*k);
+		}
+	}
+
+	contactStateRead[0] = EEPROM_Read_NUM(10, 0);
+	contactStateRead[1] = EEPROM_Read_NUM(11, 0);
+	contactStateRead[2] = EEPROM_Read_NUM(12, 0);
+	contactStateRead[3] = EEPROM_Read_NUM(13, 0);
+	contactStateRead[4] = EEPROM_Read_NUM(14, 0);
+
+
+	//contact state leri eepromdan yukle
+	for(int k=0;k<16;k++){
+		contactState[k] = (contactStateRead[0] >> k) & 1;
+		contactState[k+16] = (contactStateRead[1] >> k) & 1;
+		contactState[k+32] = (contactStateRead[2] >> k) & 1;
+		contactState[k+48] = (contactStateRead[3] >> k) & 1;
+		if(k<7){
+			contactState[k+64] = (contactStateRead[4] >> k) & 1;
 		}
 	}
 
@@ -508,8 +509,7 @@ int main(void)
 			alarmLevelRecivedFlag = 0;
 		}
 
-		if(fadeOutReg == 1)
-		{
+		if(fadeOutReg == 1){
 			fadeOutTot[0] = 0;
 			fadeOutTot[1] = 0;
 			fadeOutTot[2] = 0;
