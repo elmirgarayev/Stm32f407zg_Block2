@@ -162,11 +162,16 @@ uint16_t TxData[30][4];
 uint8_t RxData[8];
 
 uint32_t TxMailbox;
-
+///////71 eded digital var
 /*******	config  ***********/
-uint16_t contactState[71] = 		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};			//normal open is 0 , normal close 1
-
-uint16_t delaySeconds[71] = 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};			//signal cixdiqdan sonra neqeder gozleyecek
+//uint16_t contactState[71] = 		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};			//normal open is 0 , normal close 1
+uint16_t contactState[71];		//normal open is 0 , normal close 1
+uint16_t contactStateTot[5] = {0,0,0,0,0};
+uint16_t contactStateRead[5] = {0,0,0,0,0};
+uint16_t contactStateTest[71];
+uint16_t delaySeconds[72] = 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};			//signal cixdiqdan sonra neqeder gozleyecek
+uint16_t delaySecondsTot[40];
+uint16_t delaySecondsTotRead[40];
 uint16_t digitalInputId[71] =  		{2065,2066,2067,2068,2069,2070,2071,2072,2073,2074,2075,2076,2077,2078,2079,2080,2081,2082,2083,2084,2085,2086,2087,2088,2089,2090,2091,2092,2093,2094,2095,2096,2097,2098,2099,2100,2101,2102,2103,2104,2105,2106,2107,2108,2109,2110,2111,2112,2037,2038,2039,2040,2041,2042,2043,2044,2045,2046,2047,2048,2049,2050,2051,2052,2053,2054,2055,2056,2057,2058,2059};				//signal id leri
 uint8_t fadeOut[71] =  			{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 uint8_t fadeOutBaxmaq[71] =  	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}; //hansi giris fade outdu onu tutur
@@ -236,7 +241,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1){
 	if(RxHeader.StdId == 0x501){
 		pk1 = RxData[0];
 	}
-	// burda gelen alarmLimitleri qebul et yazdir
+	// burda gelen alarmLimitleri fade outlar digitiallar ucun count bilgisi birde contact state qebul et yazdir
 	if (RxHeader.StdId == 0x600) {
 		fadeOutReg = 1;
 		alarmLevelRecivedFlag = 1;	//qebul etdiyimizi qey edirik. geri xeber etdiyimizde sifirla.
@@ -245,7 +250,9 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1){
 		TxData[25][0] = recivedID;
 		for (int k = 0; k < 71; k++) {
 			if (digitalInputId[k] == recivedID) {
-				fadeOut[k] = RxData[2];
+				fadeOut[k] = RxData[2] & 0x01;
+				contactState[k] = (RxData[2] >> 1) & 0x01;
+				delaySeconds[k] = (int)RxData[3] + ((int)RxData[4] << 8);
 			}
 		}
 
@@ -259,15 +266,15 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1){
 			}
 		}
 	}
-
+	//0x650 gelende hl hazirdaki deyerleri qoy 0x656 nin icine yolla pc yeki orda pencerede goruntuleye bilsin.
 	if (RxHeader.StdId == 0x650) {
 		recivedID = (int) (RxData[0]) + ((int) (RxData[1]) << 8);
 		prencereAcilmaFlag = 1;
 		for (int k = 0; k < 71; k++) {
 			if (digitalInputId[k] == recivedID) {
 				TxData[26][0] = recivedID;
-				TxData[26][1] = fadeOut[k];
-				TxData[26][2] = 0;
+				TxData[26][1] = fadeOut[k] + (contactState[k] << 1);
+				TxData[26][2] = delaySeconds[k];
 				TxData[26][3] = 0;
 			}
 		}
@@ -376,33 +383,32 @@ int main(void)
 
 	//Start Timer
 	HAL_TIM_Base_Start_IT(&htim6);
+	//eeprom un 30 cu page e qeder temizlemek
+/*
+	for(int t=0;t > 100 ; t++){
+		EEPROM_PageErase(t);
+	}
+*/
 
 
-	/*
-		for(int k = 0; k > 16; k++)
-		{
-			alarmLevel[k] = EEPROM_Read_NUM(8, 4*k);
-			if(k<9)
-			{
-				alarmLevel[k+16] = EEPROM_Read_NUM(9, 4*k);
-			}
+	contactStateRead[0] = EEPROM_Read_NUM(10, 0);
+	contactStateRead[1] = EEPROM_Read_NUM(11, 0);
+	contactStateRead[2] = EEPROM_Read_NUM(12, 0);
+	contactStateRead[3] = EEPROM_Read_NUM(13, 0);
+	contactStateRead[4] = EEPROM_Read_NUM(14, 0);
+
+
+	//contact state leri eepromdan yukle
+	for(int k=0;k<16;k++){
+		contactState[k] = (contactStateRead[0] >> k) & 1;
+		contactState[k+16] = (contactStateRead[1] >> k) & 1;
+		contactState[k+32] = (contactStateRead[2] >> k) & 1;
+		contactState[k+48] = (contactStateRead[3] >> k) & 1;
+		if(k<7){
+			contactState[k+64] = (contactStateRead[4] >> k) & 1;
 		}
-	*/
+	}
 
-		////float alarm deyerlerin burda yazdir////
-		/*
-		for(int k = 0; k < 16; k++)
-		{
-			EEPROM_Write_NUM(8, 4*k, alarmLevelWrite[k]);
-			alarmLevelRead[k] = EEPROM_Read_NUM(8, 4*k);
-
-			if(k<9)
-			{
-				EEPROM_Write_NUM(9, 4*k, alarmLevelWrite[k+16]);
-				alarmLevelRead[k+16] = EEPROM_Read_NUM(9, 4*k);
-			}
-		}
-		*/
 	fadeOutTotRead[0] = EEPROM_Read_NUM(1, 0);
 	fadeOutTotRead[1] = EEPROM_Read_NUM(2, 0);
 	fadeOutTotRead[2] = EEPROM_Read_NUM(3, 0);
@@ -412,6 +418,7 @@ int main(void)
 	analogFadeOutTotRead[0] = EEPROM_Read_NUM(6, 0);
 	analogFadeOutTotRead[1] = EEPROM_Read_NUM(7, 0);
 
+	//analog ve digital fade outlari burda eepromdan yukle
 	for(int k=0;k<16;k++){
 		fadeOut[k] = (fadeOutTotRead[0] >> k) & 1;
 		fadeOut[k+16] = (fadeOutTotRead[1] >> k) & 1;
@@ -428,6 +435,7 @@ int main(void)
 		}
 	}
 
+	//analog alarmLevel leri burda eepromdan yukle
 	for(int k=0;k<24;k++)
 	{
 		if(k>=16)
@@ -440,6 +448,23 @@ int main(void)
 		}
 	}
 
+
+	// delay secondsu eepromdan oxuma
+	for(int t=0;t<9;t++){
+		for(int k=0;k<4;k++){
+
+			delaySecondsTotRead[t*4+k] = EEPROM_Read_NUM(20+t, 16*k);
+
+			delaySeconds[8*t+k*2] = (delaySecondsTotRead[t*4+k]) & 0xff;
+			delaySeconds[8*t+k*2+1] = (delaySecondsTotRead[t*4+k] >> 8) & 0xff;
+		}
+	}
+
+
+	//bu testi wile icine qoyma cunki eeprom un yazma omru var bu omur 1milyon defedi. bir cel olse butun eprom xarab olacaq.
+	EEPROM_Write_NUM(0, 0, dataw3);
+	datar3 = EEPROM_Read_NUM(0, 0);
+
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
@@ -450,14 +475,14 @@ int main(void)
 
 		/* USER CODE BEGIN 3 */
 
-		EEPROM_Write_NUM(0, 0, dataw3);
-		datar3 = EEPROM_Read_NUM(0, 0);
+
 		//EEPROM_Write_NUM(0, 4, dataw3[1]);
 		//datar3[1] = EEPROM_Read_NUM(0, 4);
 
 		if (prencereAcilmaFlag == 1){
 			HAL_CAN_AddTxMessage(&hcan1, &TxHeader[26], TxData[26], &TxMailbox);
 			HAL_Delay(1);
+			//TxData[26][0] = 0;TxData[26][1] = 0;TxData[26][2] = 0;TxData[26][3] = 0;
 			prencereAcilmaFlag = 0;
 		}
 
@@ -519,17 +544,61 @@ int main(void)
 			EEPROM_Write_NUM (6, 0, analogFadeOutTot[0]);
 			EEPROM_Write_NUM (7, 0, analogFadeOutTot[1]);
 
+			fadeOutTotReadTest[0] = EEPROM_Read_NUM(1, 0);
+			fadeOutTotReadTest[1] = EEPROM_Read_NUM(2, 0);
+			fadeOutTotReadTest[2] = EEPROM_Read_NUM(3, 0);
+			fadeOutTotReadTest[3] = EEPROM_Read_NUM(4, 0);
+			fadeOutTotReadTest[4] = EEPROM_Read_NUM(5, 0);
+
+			analogFadeOutTotReadTest[0] = EEPROM_Read_NUM(6, 0);
+			analogFadeOutTotReadTest[1] = EEPROM_Read_NUM(7, 0);
+
+
+			contactStateTot[0] = 0;
+			contactStateTot[1] = 0;
+			contactStateTot[2] = 0;
+			contactStateTot[3] = 0;
+			contactStateTot[4] = 0;
+
+			//digital signallarin contact state ini eeproma yazdirmaq
+			for(int t=0;t<16;t++){
+				contactStateTot[0] |= contactState[t]<<t;
+				contactStateTot[1] |= contactState[t+16]<<t;
+				contactStateTot[2] |= contactState[t+32]<<t;
+				contactStateTot[3] |= contactState[t+48]<<t;
+				if(t<7){
+					contactStateTot[4] |= contactState[t+64]<<t;
+				}
+			}
+
+			EEPROM_Write_NUM (10, 0, contactStateTot[0]);
+			EEPROM_Write_NUM (11, 0, contactStateTot[1]);
+			EEPROM_Write_NUM (12, 0, contactStateTot[2]);
+			EEPROM_Write_NUM (13, 0, contactStateTot[3]);
+			EEPROM_Write_NUM (14, 0, contactStateTot[4]);
+
+			contactStateTest[0] = EEPROM_Read_NUM(10, 0);
+			contactStateTest[1] = EEPROM_Read_NUM(11, 0);
+			contactStateTest[2] = EEPROM_Read_NUM(12, 0);
+			contactStateTest[3] = EEPROM_Read_NUM(13, 0);
+			contactStateTest[4] = EEPROM_Read_NUM(14, 0);
+
+
+			/////////delay secondsu eeproma yazma
+
+			for(int t=0;t<9;t++){
+				for(int k=0;k<4;k++){
+					delaySecondsTot[t*4+k] |= delaySeconds[8*t+k*2]<<0;
+					delaySecondsTot[t*4+k] |= delaySeconds[8*t+k*2+1]<<8;
+
+					EEPROM_Write_NUM(20+t, 16*k, delaySecondsTot[t*4+k]);
+					delaySecondsTot[t*4+k] = 0;
+				}
+			}
+
 			fadeOutReg = 0;
 		}
 
-		fadeOutTotReadTest[0] = EEPROM_Read_NUM(1, 0);
-		fadeOutTotReadTest[1] = EEPROM_Read_NUM(2, 0);
-		fadeOutTotReadTest[2] = EEPROM_Read_NUM(3, 0);
-		fadeOutTotReadTest[3] = EEPROM_Read_NUM(4, 0);
-		fadeOutTotReadTest[4] = EEPROM_Read_NUM(5, 0);
-
-		analogFadeOutTotReadTest[0] = EEPROM_Read_NUM(6, 0);
-		analogFadeOutTotReadTest[1] = EEPROM_Read_NUM(7, 0);
 
 		//buarada epromdan oxunan ilkin deyerleri fade out arrayine saliriq.
 		for(int k=0;k<16;k++){
@@ -827,6 +896,7 @@ int main(void)
 				secondByte[i2_t] |= (int)(63/(analogConfigs[i2_t].maxRealVal)*alarmLevel[i2_t]) << 2;
 
 				secondWord[i2_t] = (uint16_t)secondByte[i2_t] + ((uint16_t)fractionPart[i2_t])*256;
+				secondByte[i2_t] &= 0x03;
 
 				TxData[i][t*2] = intPart[i2_t];
 				TxData[i][t*2+1] = secondWord[i2_t];
@@ -835,6 +905,7 @@ int main(void)
 
 			HAL_CAN_AddTxMessage(&hcan1, &TxHeader[i], TxData[i], &TxMailbox);
 			HAL_Delay(20);
+
 
 		}
 
@@ -1258,9 +1329,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			if(waitingForDelay[h] == 1)
 			{
 				delaySecondsCount[h]++;
-				if(delaySecondsCount[h] >= 50)
+				if(delaySecondsCount[h] >= 255)
 				{
-					//delaySecondsCount[h] = 50;
+					delaySecondsCount[h] = 255;
 				}
 			}
 		}
