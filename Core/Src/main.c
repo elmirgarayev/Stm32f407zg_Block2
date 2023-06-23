@@ -179,7 +179,6 @@ uint8_t fadeOutBaxmaq[71] =  	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 uint16_t fadeOutTot[12] = {0,0,0,0,0,0,0,0,0,0,0,0};
 uint16_t fadeOutTotRead[12] = {0,0,0,0,0,0,0,0,0,0,0,0};
 uint16_t fadeOutTotReadTest[12] =  	{0,0,0,0,0,0,0,0,0,0,0,0}; //
-
 fadeOutReg = 0;
 
 /********************************/
@@ -243,13 +242,13 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1){
 	}
 	// burda gelen alarmLimitleri fade outlar digitiallar ucun count bilgisi birde contact state qebul et yazdir
 	if (RxHeader.StdId == 0x600) {
-		fadeOutReg = 1;
-		alarmLevelRecivedFlag = 1;	//qebul etdiyimizi qey edirik. geri xeber etdiyimizde sifirla.
 		recivedID = (int) (RxData[0]) + ((int) (RxData[1]) << 8);
 		float value = 0;
 		TxData[25][0] = recivedID;
 		for (int k = 0; k < 71; k++) {
 			if (digitalInputId[k] == recivedID) {
+				fadeOutReg = 1;
+				alarmLevelRecivedFlag = 1;	//qebul etdiyimizi qey edirik. geri xeber etdiyimizde sifirla.
 				fadeOut[k] = RxData[2] & 0x01;
 				contactState[k] = (RxData[2] >> 1) & 0x01;
 				delaySeconds[k] = (int)RxData[3] + ((int)RxData[4] << 8);
@@ -260,6 +259,8 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1){
 		{
 			if(analogInputID[k] == recivedID) //deyekki id bunun icindedi
 			{
+				fadeOutReg = 1;
+				alarmLevelRecivedFlag = 1;	//qebul etdiyimizi qey edirik. geri xeber etdiyimizde sifirla.
 				value = (int)RxData[3] + ((int)RxData[4] << 8) + ((float)RxData[5])/100;
 				analogFadeOut[k] = RxData[2];
 				alarmLevel[k]=value;
@@ -269,9 +270,9 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1){
 	//0x650 gelende hl hazirdaki deyerleri qoy 0x656 nin icine yolla pc yeki orda pencerede goruntuleye bilsin.
 	if (RxHeader.StdId == 0x650) {
 		recivedID = (int) (RxData[0]) + ((int) (RxData[1]) << 8);
-		prencereAcilmaFlag = 1;
 		for (int k = 0; k < 71; k++) {
 			if (digitalInputId[k] == recivedID) {
+				prencereAcilmaFlag = 1;
 				TxData[26][0] = recivedID;
 				TxData[26][1] = fadeOut[k] + (contactState[k] << 1);
 				TxData[26][2] = delaySeconds[k];
@@ -283,6 +284,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1){
 		{
 			if(analogInputID[k] == recivedID) //deyekki id bunun icindedi
 			{
+				prencereAcilmaFlag = 1;
 				TxData[26][0] = recivedID;
 				TxData[26][1] = analogFadeOut[k];
 				TxData[26][2] = (int)alarmLevel[k];
@@ -383,7 +385,7 @@ int main(void)
 
 	//Start Timer
 	HAL_TIM_Base_Start_IT(&htim6);
-	//eeprom un 30 cu page e qeder temizlemek
+	//eeprom un 100 cu page e qeder temizlemek
 /*
 	for(int t=0;t > 100 ; t++){
 		EEPROM_PageErase(t);
@@ -470,8 +472,7 @@ int main(void)
 
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
-	while (1)
-	{
+	while (1){
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */
@@ -628,8 +629,7 @@ int main(void)
 		int m=0;
 		for(int t=0;t<32;t++)
 		{
-			if((t != 0) && (t != 2) && (t != 4) && (t != 6) && (t != 8) && (t != 10) && (t != 12) && (t != 14))
-			{
+			if((t != 0) && (t != 2) && (t != 4) && (t != 6) && (t != 8) && (t != 10) && (t != 12) && (t != 14)){
 				analog[m]=message[t]; ////lazimsiz bos mesajlari atmaq
 				m++;
 			}
