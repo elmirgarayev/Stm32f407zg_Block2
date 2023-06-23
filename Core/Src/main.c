@@ -759,7 +759,7 @@ int main(void)
 
 				tamHisse=k/8;	        // 1 id 4 word yollayir onagore her word ucun boluruk
 				kesirHisse=k%8;			//sonraki wordun necencisi olduguna bundan baxiriq
-
+				//burda eger alarm cixibsa 1 edirik hemin biti cixmayibsa asagda sifirlayir obsi onsuz -->> onu sonradan deyisdirib andleme ede bilerik
 				if (alarmOn[k] != 0)
 				{
 					digitalSum[tamHisse] |= (1 << kesirHisse * 2); //burdada necncei wordun olduguna sonra hemin wordun necencisi olduguna baxiriq
