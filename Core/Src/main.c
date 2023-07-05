@@ -169,7 +169,7 @@ uint16_t contactState[71];		//normal open is 0 , normal close 1
 uint16_t contactStateTot[5] = {0,0,0,0,0};
 uint16_t contactStateRead[5] = {0,0,0,0,0};
 uint16_t contactStateTest[71];
-uint16_t delaySeconds[72] = 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};			//signal cixdiqdan sonra neqeder gozleyecek
+uint16_t delaySeconds[72] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};			//signal cixdiqdan sonra neqeder gozleyecek
 uint16_t delaySecondsTot[40];
 uint16_t delaySecondsTotRead[40];
 uint16_t digitalInputId[71] =  		{2065,2066,2067,2068,2069,2070,2071,2072,2073,2074,2075,2076,2077,2078,2079,2080,2081,2082,2083,2084,2085,2086,2087,2088,2089,2090,2091,2092,2093,2094,2095,2096,2097,2098,2099,2100,2101,2102,2103,2104,2105,2106,2107,2108,2109,2110,2111,2112,2037,2038,2039,2040,2041,2042,2043,2044,2045,2046,2047,2048,2049,2050,2051,2052,2053,2054,2055,2056,2057,2058,2059};				//signal id leri
@@ -292,7 +292,6 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1){
 			}
 		}
 	}
-
 }
 
 //float alarmLevel[] = {70,98,80,65,90,85,1500,1500,0.5,2,1500,1500,1300,0.7,0.3,0.25,8,0.7,3,0.6,1,490,1500,1500,60};
@@ -374,7 +373,6 @@ int main(void)
 	HAL_CAN_Start(&hcan1);
 
 	HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING);
-
 
 	for(int j=0;j<30;j++){
 		TxHeader[j].DLC = 8;
