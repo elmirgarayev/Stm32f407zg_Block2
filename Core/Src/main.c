@@ -81,7 +81,7 @@ static void MX_TIM6_Init(void);
 int dataw3 = 17;
 int datar3;
 float alarmLevelWrite[25] = {70,98,80,65,90,85,1500,1500,0.5,2,1500,1500,1300,0.7,0.3,0.25,8,0.7,3,0.6,1,490,1500,1500,60};
-float alarmLevelRead[25] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+float alarmLevelRead[25] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 float alarmLevel[25] ;//= {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
@@ -179,12 +179,12 @@ uint8_t fadeOutBaxmaq[71] =  	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 uint16_t fadeOutTot[12] = {0,0,0,0,0,0,0,0,0,0,0,0};
 uint16_t fadeOutTotRead[12] = {0,0,0,0,0,0,0,0,0,0,0,0};
 uint16_t fadeOutTotReadTest[12] =  	{0,0,0,0,0,0,0,0,0,0,0,0}; //
-fadeOutReg = 0;
+int fadeOutReg = 0;
 
 /********************************/
 uint16_t delaySecondsCount[71] =  	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};			//delay saniye sayici
 
-uint16_t delaySecondsCountForOff[71] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };		//alarmi sondurmek icin delay saniye sayici
+uint16_t delaySecondsCountForOff[71] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};		//alarmi sondurmek icin delay saniye sayici
 
 uint16_t alarmOn[71] =  			{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
@@ -389,6 +389,16 @@ int main(void)
 		EEPROM_PageErase(t);
 	}
 */
+
+	void sendData(int inputId)
+	{
+		TxData[18][0]=inputId;  ////giris nomresi
+		//TxData[18][1]=(uint16_t)seconds;
+		TxData[18][2]=2;  /////////stansiya nomresi
+		TxData[18][3]=4;
+		HAL_CAN_AddTxMessage(&hcan1, &TxHeader[18], TxData[18], &TxMailbox);
+		HAL_Delay(20);
+	}
 
 
 	fadeOutTotRead[0] = EEPROM_Read_NUM(1, 0);
@@ -840,7 +850,7 @@ int main(void)
 						analogAlarmCountDown[i2_t] = 0;
 						if(alarmOnAnalog[i2_t] == 0){
 							analogAlarmCount[i2_t]++; // analog alarimin say
-							if((analogAlarmCount >= 10) && (analogFadeOut[i2_t] == 0)){ // 4 defe alarm verse analog alarimin yandir
+							if((analogAlarmCount[i2_t] >= 10) && (analogFadeOut[i2_t] == 0)){ // 4 defe alarm verse analog alarimin yandir
 								alarmOnAnalog[i2_t] = 1;
 								sendData(analogInputID[i2_t]);
 								secondByte[i2_t] |= 1;    // eger alarim oldusa 1 ci biti 1 ele
@@ -863,7 +873,7 @@ int main(void)
 						analogAlarmCountDown[i2_t] = 0;
 						if(alarmOnAnalog[i2_t] == 0){
 							analogAlarmCount[i2_t]++; // analog alarimin say
-							if((analogAlarmCount >= 10) && (analogFadeOut[i2_t] == 0)) // 4 defe alarm verse analog alarimin yandir
+							if((analogAlarmCount[i2_t] >= 10) && (analogFadeOut[i2_t] == 0)) // 4 defe alarm verse analog alarimin yandir
 							{
 								secondByte[i2_t] |= 1;    // eger alarim oldusa 1 ci biti 1 ele
 								alarmOnAnalog[i2_t] = 1;
@@ -903,18 +913,17 @@ int main(void)
 
 			HAL_CAN_AddTxMessage(&hcan1, &TxHeader[i], TxData[i], &TxMailbox);
 			HAL_Delay(20);
-
-
 		}
-
+/*
 		TxData[16][0] = digitalSum;
 		TxData[16][1] = digitalSum;
 		TxData[16][2] = digitalSum;
 		TxData[16][3] = digitalSum;
 
+		//bu neyi yollayir bilmedim arasdir
 		HAL_CAN_AddTxMessage(&hcan1, &TxHeader[16], TxData[16], &TxMailbox);
 		HAL_Delay(20);
-
+*/
 
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1337,17 +1346,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	}
 }
 
-
-
-void sendData(int inputId)
-{
-	TxData[18][0]=inputId;  ////giris nomresi
-	//TxData[18][1]=(uint16_t)seconds;
-	TxData[18][2]=2;  /////////stansiya nomresi
-	TxData[18][3]=4;
-	HAL_CAN_AddTxMessage(&hcan1, &TxHeader[18], TxData[18], &TxMailbox);
-	HAL_Delay(20);
-}
 
 /* USER CODE END 4 */
 
