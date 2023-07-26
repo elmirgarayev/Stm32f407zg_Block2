@@ -789,7 +789,6 @@ int main(void)
 			stationAlarm = resetAlarm;						//alarmi reset et
 			HAL_GPIO_WritePin(GPIOF, GPIO_PIN_13, GPIO_PIN_RESET);//ve sondur alarmi
 			recivedReset = 0;				//compyuterden gelen reseti sifirla
-			say = 10;
 		}
 
 		TxData[17][0] = stationAlarm;
@@ -797,17 +796,6 @@ int main(void)
 		TxData[17][2] = stationAlarm;
 		TxData[17][3] = stationAlarm;
 
-		if (say != 0) {
-			TxData[17][1] = 3;
-			say--;
-			for (int hh = 0; hh < 10; hh++) {
-				HAL_CAN_AddTxMessage(&hcan1, &TxHeader[17], TxData[17],
-						&TxMailbox);
-				HAL_Delay(20);
-			}
-		} else {
-			TxData[17][1] = 0;
-		}
 
 		HAL_CAN_AddTxMessage(&hcan1, &TxHeader[17], TxData[17], &TxMailbox);
 		HAL_Delay(20);
