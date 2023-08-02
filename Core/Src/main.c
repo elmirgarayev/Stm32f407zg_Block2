@@ -160,7 +160,7 @@ CAN_RxHeaderTypeDef RxHeader;
 int datacheck = 0;
 uint8_t pk1 = 0;
 
-uint16_t TxData[30][8];
+uint8_t TxData[30][8];
 
 uint8_t RxData[8];
 
