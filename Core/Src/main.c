@@ -160,7 +160,7 @@ CAN_RxHeaderTypeDef RxHeader;
 int datacheck = 0;
 uint8_t pk1 = 0;
 
-uint16_t TxData[30][4];
+uint16_t TxData[30][8];
 
 uint8_t RxData[8];
 
@@ -282,24 +282,23 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1) {
 	if (RxHeader.StdId == 0x600) {
 		recivedID = (int) (RxData[0]) + ((int) (RxData[1]) << 8);
 		float value = 0;
-		TxData[25][0] = recivedID;
+		TxData[25][0] = RxData[0];
+		TxData[25][1] = RxData[1];
 		for (int k = 0; k < 71; k++) {
 			if (digitalInputId[k] == recivedID) {
 				fadeOutReg = 1;
 				alarmLevelRecivedFlag = 1;//qebul etdiyimizi qey edirik. geri xeber etdiyimizde sifirla.
 				fadeOut[k] = RxData[2] & 0x01;
 				contactState[k] = (RxData[2] >> 1) & 0x01;
-				delaySeconds[k] = (int) RxData[3] + ((int) RxData[4] << 8);
+				delaySeconds[k] = (int) RxData[3];
 			}
 		}
 
 		for (int k = 0; k < 24; k++) {
-			if (analogInputID[k] == recivedID) //deyekki id bunun icindedi
-					{
+			if (analogInputID[k] == recivedID){ //deyekki id bunun icindedi
 				fadeOutReg = 1;
 				alarmLevelRecivedFlag = 1;//qebul etdiyimizi qey edirik. geri xeber etdiyimizde sifirla.
-				value = (int) RxData[3] + ((int) RxData[4] << 8)
-						+ ((float) RxData[5]) / 100;
+				value = (int) RxData[3] + ((int) RxData[4] << 8) + ((float) RxData[5]) / 100;
 				analogFadeOut[k] = RxData[2];
 				alarmLevel[k] = value;
 			}
@@ -311,10 +310,14 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1) {
 		for (int k = 0; k < 71; k++) {
 			if (digitalInputId[k] == recivedID) {
 				prencereAcilmaFlag = 1;
-				TxData[26][0] = recivedID;
-				TxData[26][1] = fadeOut[k] + (contactState[k] << 1);
-				TxData[26][2] = delaySeconds[k];
-				TxData[26][3] = 0;
+				TxData[26][0] = RxData[0];
+				TxData[26][1] = RxData[1];
+				TxData[26][2] = fadeOut[k] + (contactState[k] << 1);
+				TxData[26][3] = 0;	///NIYEYSE MENASIZ OLARAQ YERIN DEYISMISEM
+				TxData[26][4] = delaySeconds[k];
+				TxData[26][5] = 0;
+				TxData[26][6] = 0;
+				TxData[26][7] = 0;
 			}
 		}
 
@@ -322,11 +325,14 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1) {
 			if (analogInputID[k] == recivedID) //deyekki id bunun icindedi
 					{
 				prencereAcilmaFlag = 1;
-				TxData[26][0] = recivedID;
-				TxData[26][1] = analogFadeOut[k];
-				TxData[26][2] = (int) alarmLevel[k];
-				TxData[26][3] = (int) ((alarmLevel[k] - (int) alarmLevel[k])
-						* 100);
+				TxData[26][0] = RxData[0];
+				TxData[26][1] = RxData[1];
+				TxData[26][2] = analogFadeOut[k];
+				TxData[26][3] = 0;
+				TxData[26][4] = (int) alarmLevel[k];
+				TxData[26][5] = (int) alarmLevel[k] >> 8;
+				TxData[26][6] = (int) ((alarmLevel[k] - (int) alarmLevel[k]) * 100);
+				TxData[26][7] = 0;
 			}
 		}
 	}
@@ -801,17 +807,31 @@ int main(void)
 		HAL_Delay(20);
 
 		TxData[13][0] = digitalSum[0];
-		TxData[13][1] = digitalSum[1];
-		TxData[13][2] = digitalSum[2];
-		TxData[13][3] = digitalSum[3];
+		TxData[13][1] = digitalSum[0] >> 8;
+		TxData[13][2] = digitalSum[1];
+		TxData[13][3] = digitalSum[1] >> 8;
+		TxData[13][4] = digitalSum[2];
+		TxData[13][5] = digitalSum[2] >> 8;
+		TxData[13][6] = digitalSum[3];
+		TxData[13][7] = digitalSum[3] >> 8;
+
 		TxData[14][0] = digitalSum[4];
-		TxData[14][1] = digitalSum[5];
-		TxData[14][2] = digitalSum[6];
-		TxData[14][3] = digitalSum[7];
+		TxData[14][1] = digitalSum[4] >> 8;
+		TxData[14][2] = digitalSum[5];
+		TxData[14][3] = digitalSum[5] >> 8;
+		TxData[14][4] = digitalSum[6];
+		TxData[14][5] = digitalSum[6] >> 8;
+		TxData[14][6] = digitalSum[7];
+		TxData[14][7] = digitalSum[7] >> 8;
+
 		TxData[15][0] = digitalSum[8];
-		TxData[15][1] = digitalSum[9];
-		TxData[15][2] = 0;
-		TxData[15][3] = 0;
+		TxData[15][1] = digitalSum[8] >> 8;
+		TxData[15][2] = digitalSum[9];
+		TxData[15][3] = digitalSum[9] >> 8;
+		TxData[15][4] = 0;
+		TxData[15][5] = 0;
+		TxData[15][6] = 0;
+		TxData[15][7] = 0;
 
 		HAL_CAN_AddTxMessage(&hcan1, &TxHeader[13], TxData[13], &TxMailbox);
 		HAL_Delay(20);
@@ -912,8 +932,12 @@ int main(void)
 						+ ((uint16_t) fractionPart[i2_t]) * 256;
 				secondByte[i2_t] &= 0x03;
 
-				TxData[i][t * 2] = intPart[i2_t];
-				TxData[i][t * 2 + 1] = secondWord[i2_t];
+
+
+				TxData[i][t * 4] = intPart[i2_t];
+				TxData[i][t * 4 + 1] = intPart[i2_t] >> 8;
+				TxData[i][t * 4 + 2] = secondWord[i2_t];
+				TxData[i][t * 4 + 3] = secondWord[i2_t] >> 8;
 
 			}
 
