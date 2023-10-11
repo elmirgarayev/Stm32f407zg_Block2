@@ -92,6 +92,8 @@ int i2_t = 0;
 int delayTime = 5;
 
 int sendCountCheck[40];
+int catacaqSay=30;
+
 
 uint16_t message[62];
 uint16_t analog[62];
@@ -811,7 +813,7 @@ int main(void)
 		TxData[17][3] = stationAlarm;
 
 
-		if(sendCountCheck[25] >= 10){
+		if(sendCountCheck[25] >= catacaqSay){
 			HAL_CAN_AddTxMessage(&hcan1, &TxHeader[17], TxData[17], &TxMailbox);
 			HAL_Delay(delayTime);
 			sendCountCheck[25] = 0;
@@ -848,7 +850,7 @@ int main(void)
 		TxData[15][7] = 0;
 
 
-		if(sendCountCheck[26] >= 10){
+		if(sendCountCheck[26] >= catacaqSay){
 			HAL_CAN_AddTxMessage(&hcan1, &TxHeader[13], TxData[13], &TxMailbox);
 			HAL_Delay(delayTime);
 			sendCountCheck[26] = 0;
@@ -857,7 +859,7 @@ int main(void)
 			sendCountCheck[26]++;
 		}
 
-		if(sendCountCheck[27] >= 10){
+		if(sendCountCheck[27] >= catacaqSay){
 			HAL_CAN_AddTxMessage(&hcan1, &TxHeader[14], TxData[14], &TxMailbox);
 			HAL_Delay(delayTime);
 			sendCountCheck[27] = 0;
@@ -866,7 +868,7 @@ int main(void)
 			sendCountCheck[27]++;
 		}
 
-		if(sendCountCheck[28] >= 10){
+		if(sendCountCheck[28] >= catacaqSay){
 			HAL_CAN_AddTxMessage(&hcan1, &TxHeader[15], TxData[15], &TxMailbox);
 			HAL_Delay(delayTime);
 			sendCountCheck[28] = 0;
@@ -976,7 +978,7 @@ int main(void)
 
 			}
 
-			if(sendCountCheck[i] >= 10){
+			if(sendCountCheck[i] >= catacaqSay){
 				HAL_CAN_AddTxMessage(&hcan1, &TxHeader[i], TxData[i], &TxMailbox);
 				HAL_Delay(delayTime);
 				sendCountCheck[i] = 0;
