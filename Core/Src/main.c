@@ -89,6 +89,8 @@ float alarmLevel[25]; //= {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 
 int i2_t = 0;
 
+int otherSignals[5] = {0, 0, 0, 0, 0};
+
 int delayTime = 5;
 
 int sendCountCheck[40];
@@ -174,28 +176,28 @@ uint32_t TxMailbox;
 ///////71 eded digital var
 /*******	config  ***********/
 //uint16_t contactState[71] = 		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};			//normal open is 0 , normal close 1
-uint16_t contactState[71];		//normal open is 0 , normal close 1
+uint16_t contactState[76];		//normal open is 0 , normal close 1
 uint16_t contactStateTot[5] = { 0, 0, 0, 0, 0 };
 uint16_t contactStateRead[5] = { 0, 0, 0, 0, 0 };
-uint16_t contactStateTest[71];
-uint16_t delaySeconds[72];		//signal cixdiqdan sonra neqeder gozleyecek
+uint16_t contactStateTest[76];
+uint16_t delaySeconds[76];		//signal cixdiqdan sonra neqeder gozleyecek
 uint16_t delaySecondsTot[40];
 uint16_t delaySecondsTotRead[40];
-uint16_t digitalInputId[71] = { 2065, 2066, 2067, 2068, 2069, 2070, 2071, 2072,
+uint16_t digitalInputId[76] = { 2065, 2066, 2067, 2068, 2069, 2070, 2071, 2072,
 		2073, 2074, 2075, 2076, 2077, 2078, 2079, 2080, 2081, 2082, 2083, 2084,
 		2085, 2086, 2087, 2088, 2089, 2090, 2091, 2092, 2093, 2094, 2095, 2096,
 		2097, 2098, 2099, 2100, 2101, 2102, 2103, 2104, 2105, 2106, 2107, 2108,
 		2109, 2110, 2111, 2112, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044,
 		2045, 2046, 2047, 2048, 2049, 2050, 2051, 2052, 2053, 2054, 2055, 2056,
-		2057, 2058, 2059 };				//signal id leri
-uint8_t fadeOut[71] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		2057, 2058, 2059, 2113, 2114, 2115, 2116, 2117};				//signal id leri////group alarmlar ve inhibit ucun id elave olundu 2113(DG SB), 2114(E.Gen), 2115(DG Inhb SB), 2116(ME Inhb SB), 2117(E.Gen Inhb)
+uint8_t fadeOut[76] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0 };
-uint8_t fadeOutBaxmaq[71] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t fadeOutBaxmaq[76] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0 }; //hansi giris fade outdu onu tutur
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; //hansi giris fade outdu onu tutur
 
 uint16_t fadeOutTot[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 uint16_t fadeOutTotRead[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -203,32 +205,32 @@ uint16_t fadeOutTotReadTest[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 int fadeOutReg = 0;
 
 /********************************/
-uint16_t delaySecondsCount[71] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+uint16_t delaySecondsCount[76] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0 };			//delay saniye sayici
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };			//delay saniye sayici
 
-uint16_t delaySecondsCountForOff[71] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+uint16_t delaySecondsCountForOff[76] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };	//alarmi sondurmek icin delay saniye sayici
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };	//alarmi sondurmek icin delay saniye sayici
 
-uint16_t alarmOn[71] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+uint16_t alarmOn[76] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0 };
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 uint16_t alarmOnAnalog[30] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-uint16_t alarmCount[71] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+uint16_t alarmCount[76] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0 }; 			// digital alarm sayicisi
-uint16_t waitingForDelay[71] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; 			// digital alarm sayicisi
+uint16_t waitingForDelay[76] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0 };			// delay ucun gozleme registeri
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };			// delay ucun gozleme registeri
 
 uint16_t analogInputID[24] = { 2006, 2008, 2010, 2012, 2014, 2016, 2018, 2020,
 		2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032,
@@ -284,6 +286,11 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1) {
 	if (RxHeader.StdId == 0x501) {
 		pk1 = RxData[0];
 	}
+	if (RxHeader.StdId == 0x510) {
+		stationAlarm = notResetAlarm;
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_13, GPIO_PIN_SET);	//alarim isigin yandir
+	}
+
 	// burda gelen alarmLimitleri fade outlar digitiallar ucun count bilgisi birde contact state qebul et yazdir
 	if (RxHeader.StdId == 0x600) {
 		recivedID = (int) (RxData[0]) + ((int) (RxData[1]) << 8);
@@ -844,11 +851,10 @@ int main(void)
 		TxData[15][1] = digitalSum[8] >> 8;
 		TxData[15][2] = digitalSum[9];
 		TxData[15][3] = digitalSum[9] >> 8;
-		TxData[15][4] = 0;
-		TxData[15][5] = 0;
-		TxData[15][6] = 0;
-		TxData[15][7] = 0;
-
+		TxData[15][4] = otherSignals[0]; //burda 2113(DG SB)
+		TxData[15][5] = otherSignals[1]; //burda 2115(DG Inhb SB)
+		TxData[15][6] = otherSignals[2]; //burda 2116(ME Inhb SB)
+		TxData[15][7] = otherSignals[3]; //burda 2117(E.Gen Inhb)
 
 		if(sendCountCheck[26] >= catacaqSay){
 			HAL_CAN_AddTxMessage(&hcan1, &TxHeader[13], TxData[13], &TxMailbox);
@@ -988,6 +994,41 @@ int main(void)
 			}
 
 		}
+
+
+		//////burda grup alarmlar ve inhibit ucun olan signallari ayarla//////
+		///////2113(DG SB)//////
+		if((alarmOn[24] == 1) || (alarmOn[25] == 1) || (alarmOn[26] == 1) || (alarmOn[27] == 1) || (alarmOn[28] == 1) || (alarmOn[29] == 1) || (alarmOnAnalog[4] == 1)) {
+			otherSignals[0] = 1;
+		}
+		else{
+			otherSignals[0] = 0;
+		}
+		//////2115(DG Inhb SB)/////
+		if(alarmOn[27] == 1) {
+			otherSignals[1] = 1;
+		}
+		else{
+			otherSignals[1] = 0;
+		}
+		//////2116(ME Inhb SB)/////
+		if(alarmOn[3] == 1) {
+			otherSignals[2] = 1;
+		}
+		else{
+			otherSignals[2] = 0;
+		}
+		/////2117(E.Gen Inhb)//////
+		if(alarmOn[46] == 1) {
+			otherSignals[3] = 1;
+		}
+		else{
+			otherSignals[3] = 0;
+		}
+		//////////////////////////////////////////////////////////////////////
+
+
+
 		/*
 		 TxData[16][0] = digitalSum;
 		 TxData[16][1] = digitalSum;
